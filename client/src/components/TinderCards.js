@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react'
 import TinderCard from 'react-tinder-card'
 import './TinderCards.css'
 import axios from './axios'
+import instance from './axios'
 
 function TinderCards() {
   const [people, setPeople] = useState([])
 
   useEffect(() => {
     async function fetchData() {
-      const req = await axios.get('/tinder/cards')
+      const req = await instance.get('/tinder/cards')
       setPeople(req.data)
     }
 

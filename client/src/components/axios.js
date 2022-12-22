@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-    baseURL:"https://tinderclone-project2.herokuapp.com/",  
+    baseURL:"https://tinder-clone-ten-ashen.vercel.app/",  
 })
 
 export default instance;
