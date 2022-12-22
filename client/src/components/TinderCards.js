@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import TinderCard from 'react-tinder-card'
 import './TinderCards.css'
-import axios from './axios'
 import instance from './axios'
 
 function TinderCards() {
