@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import Cards from './dbCards.js';
 import Cors from 'cors';
+import userSchema from "./userSchema.js";
 
 // App config
 const app = express();
@@ -21,18 +22,50 @@ mongoose.connect(CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true }
 // Api Endpoints
 app.get('/',(req,res)=>(res.status(200).send("Hello Programmers How you doing !")));
 
-app.post('/tinder/cards', async (req, res) => {
-    const dbCard = req.body;
-  
-    Cards.create(dbCard, (err, data) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.status(201).send(data);
+app.post("/register",async(req,res)=>{
+  const email = req.body.email;
+  const user = await userSchema.findOne({email}); 
+  console.log(user);
+  try{ 
+    if(!user){
+     const newUser = new userSchema({
+          email:email, 
+          name:req.body.name,
+          profilePicture:req.body.profilePicture,
+      })
+     const user  = await newUser.save();
+      res.status(200).json(user);
       }
-    });
-  });
+  }catch(err){
+     console.log(err);
+  }
+ 
+})
 
+
+// get a user 
+app.get("/user/:email",async (req,res)=>{
+  const email =  req.params.email;
+    try{
+       const user =  await userSchema.findOne({email})
+       res.status(200).json(user);
+    }catch(err){
+       res.status(500).json(err);
+    }
+}) 
+
+//create a card 
+app.post("/cards",async(req,res)=>{
+  const newPost = new Cards(req.body);
+  try{
+      savePost = await newPost.save();
+      res.status(200).json(savePost);
+  }catch(err){
+      res.status(500).json(err);
+  }
+})
+
+// get all cards
 app.get('/tinder/cards',async(req,res)=>{
     try{
     const allCards = await Cards.find();

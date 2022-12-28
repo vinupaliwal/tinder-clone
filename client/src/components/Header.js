@@ -1,15 +1,63 @@
-import React from 'react';
+import {React,useState,useRef,useEffect} from 'react';
 import PersonIcon from '@material-ui/icons/Person';
-import { IconButton } from '@material-ui/core';
+import { IconButton,Button,Typography,Modal,Box,Avatar } from '@material-ui/core';
 import ForumIcon from '@material-ui/icons/Forum';
+import {PermMedia,LocalOffer,LocationOn} from '@material-ui/icons';
+import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import './Header.css'; 
+import './Share.css';
+import axios from 'axios';
+import instance from './axios';
 
-function Header() {
+
+function Header({email}) {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const name = useRef();
+  const[user,setUser] = useState({});
+  const [file,setFile] = useState(null);
+
+  useEffect(()=>{
+    const fetchUser=async()=>{
+       const res = await instance.get(`/user/${email}`) 
+       setUser(res.data);
+       console.log(res.data);
+    }
+    fetchUser();
+  },[email])
+  console.log(email)
+
+	const handleOnclick= async(e)=>{
+        e.preventDefault();
+		const newPost = {
+			userId: user._id,
+            name:name
+		}
+		if (file) {
+			const data = new FormData();
+			const fileName = Date.now() + file.name;
+			data.append("name", fileName);
+			data.append("file", file);
+			newPost.img = fileName;
+			console.log(newPost);
+			try {
+			  await axios.post("/upload", data);
+			} catch (err) {}
+		  }
+		try{
+          await instance.post("/cards",newPost)
+		   window.location.reload();
+		}catch(err){
+			console.log(err);
+		}
+	}
+
   return (
     <>
     <div className='header'>
     <IconButton>
-       <PersonIcon  fontSize='large' className='header_icon' />
+       {user?<Avatar alt="PP" src={user.profilePicture} />:<PersonIcon  fontSize='large' className='header_icon'/>}
     </IconButton>
     <img
        className='header_logo'
@@ -17,9 +65,48 @@ function Header() {
        alt='tinder logo'
     />
     <IconButton>
-       <ForumIcon  fontSize='large' className='header_icon' />
+      <Button onClick={handleOpen}>
+        <AddAPhotoIcon  fontSize='large' className='header_icon' />
+      </Button>
     </IconButton>
     </div>
+    <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box className='modal-box'>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <div className="shareTop">
+            <img className='shareProfileImg' src={user.profilePicture} alt="" />
+            <input placeholder={`Your name..?`} className="shareInput" ref={name}/>
+			    </div>
+          <form className="shareBottom" onSubmit={handleOnclick}>
+              <div className="shareOptions">
+                <label htmlFor='file' className="shareOption">
+                  <PermMedia htmlColor='tomato' className='shareIcon' />
+                  <span className='shareOptionText'>Photo or Video</span>
+                  <input hidden type='file' id='file' accept='.png,.jpeg,.jpg' onChange={(e)=>setFile(e.target.files[0])} />
+                </label>
+                <div className="shareOption">
+                  <LocalOffer htmlColor='blue' className='shareIcon' />
+                  <span className='shareOptionText'>Tag</span>
+                </div>
+                <div className="shareOption">
+                  <LocationOn htmlColor='green' className='shareIcon' />
+                  <span className='shareOptionText'>Location</span>
+                </div>
+                <div className="shareOption">
+                  <LocationOn htmlColor='goldenrod' className='shareIcon' />
+                  <span className='shareOptionText'>Feelings</span>
+                </div>
+              </div>
+              <button className='shareButton' type='submit'>Share</button>
+			    </form>
+          </Typography>
+        </Box>
+      </Modal>
     </>
   )
 }
