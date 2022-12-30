@@ -18,7 +18,7 @@ const __dirname = path.resolve();
 app.use(express.json());  
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(Cors());
-app.use("/images",express.static(path.resolve(__dirname,"./public/images")));
+
 
 // DbConfig
 const CONNECTION ="mongodb+srv://tinder-user:wtiixQtKVaX4y4tR@cluster0.7vrns.mongodb.net/?retryWrites=true&w=majority";
@@ -103,6 +103,7 @@ app.get('/tinder/cards',async(req,res)=>{
         res.status(500).send(error);
     }
 })
+app.use(express.static(path.resolve(__dirname,"./public/images")));
 
 //Listener
 app.listen(port,()=>console.log(`server is running on http://localhost:${port}`));
