@@ -6,7 +6,7 @@
         "use": "@vercel/node"
       },
       {"src":"./server.js","use":"@now/node"},
-      {"src":"images/**/*","use":"@now/static"}
+      {"src":"./images/**/*","use":"@now/static"}
     ],
     "routes": [
       {
