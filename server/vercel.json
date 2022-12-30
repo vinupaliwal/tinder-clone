@@ -5,7 +5,6 @@
         "src": "./server.js",
         "use": "@vercel/node"
       },
-      {"src":"./server.js","use":"@now/node"},
       {"src":"./server.js","use":"@vercel/static"}
     ],
     "routes": [
