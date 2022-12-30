@@ -7,17 +7,18 @@ import helmet from "helmet";
 import userSchema from "./userSchema.js";
 import multer from 'multer';
 import path from 'path';
+
 // App config
 const app = express();
 dotenv.config(); 
 const port = process.env.PORT || 8081;
-const __dirname = path.resolve();
+const __dirname = path.resolve(); 
 
 // Middlewares .
 app.use(express.json());  
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(Cors());
-app.use("/images",express.static(path.join(__dirname,"./public/images")));
+app.use("/images",express.static(path.join(__dirname+"./public/images")));
 
 // DbConfig
 const CONNECTION ="mongodb+srv://tinder-user:wtiixQtKVaX4y4tR@cluster0.7vrns.mongodb.net/?retryWrites=true&w=majority";
