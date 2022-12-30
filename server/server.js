@@ -18,7 +18,7 @@ const __dirname = path.resolve();
 app.use(express.json());  
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(Cors());
-app.use("/images",express.static(path.join(__dirname+"./public/images")));
+app.use("/images",express.static(path.join(__dirname,"./public/images")));
 
 // DbConfig
 const CONNECTION ="mongodb+srv://tinder-user:wtiixQtKVaX4y4tR@cluster0.7vrns.mongodb.net/?retryWrites=true&w=majority";
