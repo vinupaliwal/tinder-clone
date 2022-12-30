@@ -5,7 +5,8 @@ import instance from './axios'
 
 function TinderCards() {
   const [people, setPeople] = useState([])
-
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+  console.log(PF+people.img);
   useEffect(() => {
     async function fetchData() {
       const req = await instance.get('/tinder/cards')
@@ -37,7 +38,7 @@ function TinderCards() {
             onCardLeftScreen={() => outOfFrame(person.name)}
           >
             <div
-              style={{ backgroundImage: `url(${person.imgUrl})` }}
+              style={{ backgroundImage: `url(${PF+person.img})` }}
               className='card'
             >
               <h3>{person.name}</h3>

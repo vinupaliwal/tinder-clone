@@ -1,16 +1,23 @@
+import * as dotenv from 'dotenv'
 import express from "express";
 import mongoose from "mongoose";
 import Cards from './dbCards.js';
 import Cors from 'cors';
+import helmet from "helmet";
 import userSchema from "./userSchema.js";
-
+import multer from 'multer';
+import path from 'path';
 // App config
 const app = express();
+dotenv.config(); 
 const port = process.env.PORT || 8081;
+const __dirname = path.resolve();
 
 // Middlewares .
 app.use(express.json());  
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(Cors());
+app.use("/images",express.static(path.join(__dirname,"public/images")));
 
 // DbConfig
 const CONNECTION ="mongodb+srv://tinder-user:wtiixQtKVaX4y4tR@cluster0.7vrns.mongodb.net/?retryWrites=true&w=majority";
@@ -22,10 +29,30 @@ mongoose.connect(CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true }
 // Api Endpoints
 app.get('/',(req,res)=>(res.status(200).send("Hello Programmers How you doing !")));
 
+const storage = multer.diskStorage({
+  destination:(req,file,cb)=>{
+     cb(null,"public/images");
+  },
+  filename:(req,file,cb)=>{
+     cb(null,req.body.name);
+  }
+})
+
+const upload = multer({storage});
+app.post("/upload",upload.single("file"),(req,res)=>{
+  try{
+     return res.status(200).json("File uploaded successfully");
+  }catch(err){
+     console.log(err);
+  }
+})
+
+
+
 app.post("/register",async(req,res)=>{
   const email = req.body.email;
   const user = await userSchema.findOne({email}); 
-  console.log(user);
+//   console.log(user);
   try{ 
     if(!user){
      const newUser = new userSchema({
@@ -56,9 +83,9 @@ app.get("/user/:email",async (req,res)=>{
 
 //create a card 
 app.post("/cards",async(req,res)=>{
-  const newPost = new Cards(req.body);
-  try{
-      savePost = await newPost.save();
+   try{
+     const newPost = new Cards(req.body);
+      const savePost = await newPost.save();
       res.status(200).json(savePost);
   }catch(err){
       res.status(500).json(err);

@@ -2,15 +2,15 @@ import {React,useState,useRef,useEffect} from 'react';
 import PersonIcon from '@material-ui/icons/Person';
 import { IconButton,Button,Typography,Modal,Box,Avatar } from '@material-ui/core';
 import ForumIcon from '@material-ui/icons/Forum';
-import {PermMedia,LocalOffer,LocationOn} from '@material-ui/icons';
+import {PermMedia,LocalOffer,LocationOn,Cancel} from '@material-ui/icons';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import './Header.css'; 
-import './Share.css';
 import axios from 'axios';
 import instance from './axios';
 
 
 function Header({email}) {
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -32,7 +32,7 @@ function Header({email}) {
         e.preventDefault();
 		const newPost = {
 			userId: user._id,
-            name:name
+            name:name.current.value
 		}
 		if (file) {
 			const data = new FormData();
@@ -40,13 +40,15 @@ function Header({email}) {
 			data.append("name", fileName);
 			data.append("file", file);
 			newPost.img = fileName;
-			console.log(newPost);
 			try {
-			  await axios.post("/upload", data);
-			} catch (err) {}
+			  await instance.post("/upload", data);
+			} catch (err) {
+        console.log(err);
+      }
 		  }
 		try{
-          await instance.post("/cards",newPost)
+        const res = await instance.post("/cards",newPost);
+        console.log(res.data);
 		   window.location.reload();
 		}catch(err){
 			console.log(err);
@@ -76,35 +78,32 @@ function Header({email}) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box className='modal-box'>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+      <Box className='modal-box'>
+        <div className='share'>
+		        <div className="shareWrapper">
           <div className="shareTop">
             <img className='shareProfileImg' src={user.profilePicture} alt="" />
             <input placeholder={`Your name..?`} className="shareInput" ref={name}/>
 			    </div>
+          <hr className='shareHr' />
+          {file && (
+            <div className='shareImgContainer'>
+              <img className='shareImg' src={URL.createObjectURL(file)} alt=""/>
+              <Cancel className='shareCancelImg' onClick={()=>{setFile(null)}}/>
+            </div>
+			     )}
           <form className="shareBottom" onSubmit={handleOnclick}>
               <div className="shareOptions">
                 <label htmlFor='file' className="shareOption">
                   <PermMedia htmlColor='tomato' className='shareIcon' />
-                  <span className='shareOptionText'>Photo or Video</span>
+                  <span className='shareOptionText' >Upload Photo</span>
                   <input hidden type='file' id='file' accept='.png,.jpeg,.jpg' onChange={(e)=>setFile(e.target.files[0])} />
                 </label>
-                <div className="shareOption">
-                  <LocalOffer htmlColor='blue' className='shareIcon' />
-                  <span className='shareOptionText'>Tag</span>
-                </div>
-                <div className="shareOption">
-                  <LocationOn htmlColor='green' className='shareIcon' />
-                  <span className='shareOptionText'>Location</span>
-                </div>
-                <div className="shareOption">
-                  <LocationOn htmlColor='goldenrod' className='shareIcon' />
-                  <span className='shareOptionText'>Feelings</span>
-                </div>
               </div>
-              <button className='shareButton' type='submit'>Share</button>
-			    </form>
-          </Typography>
+              <button className='shareButton' type='submit'>Create Card</button>
+			     </form>
+          </div>
+        </div>
         </Box>
       </Modal>
     </>
