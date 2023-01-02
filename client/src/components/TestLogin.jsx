@@ -73,7 +73,7 @@ function Login() {
                   }}
             /> 
           <button className="MuiButtonBase-root MuiButton-root MuiButton-text" tabindex="0" type="submit">
-             <span className="MuiButton-label">Demo login</span><span class="MuiTouchRipple-root"></span>
+             <span className="MuiButton-label" onClick={()=>{setShowlogoutButton(true); setEmail("vinup3431@gmail.com")}}>Demo login</span><span class="MuiTouchRipple-root"></span>
           </button>
             <header className="App-header">
                 {/* <button onClick={login}>

@@ -1,32 +1,19 @@
-import {React,useState,useRef,useEffect} from 'react';
+import {React,useState,useRef} from 'react';
 import PersonIcon from '@material-ui/icons/Person';
-import { IconButton,Button,Typography,Modal,Box,Avatar } from '@material-ui/core';
-import ForumIcon from '@material-ui/icons/Forum';
-import {PermMedia,LocalOffer,LocationOn,Cancel} from '@material-ui/icons';
+import { IconButton,Modal,Box,Avatar } from '@material-ui/core';
+import {PermMedia,Cancel} from '@material-ui/icons';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
+import {googleLogout} from '@react-oauth/google';
 import './Header.css'; 
-import axios from 'axios';
 import instance from './axios';
 
 
-function Header({email}) {
-  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+function Header({user}) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const name = useRef();
-  const[user,setUser] = useState({});
   const [file,setFile] = useState(null);
-
-  useEffect(()=>{
-    const fetchUser=async()=>{
-       const res = await instance.get(`/user/${email}`) 
-       setUser(res.data);
-       console.log(res.data);
-    }
-    fetchUser();
-  },[email])
-  console.log(email)
 
 	const handleOnclick= async(e)=>{
         e.preventDefault();
@@ -55,11 +42,24 @@ function Header({email}) {
 		}
 	}
 
+  const onSignoutSuccess = () => {
+    googleLogout();
+    localStorage.clear();
+    window.location.reload();
+    alert("You have been logged out successfully");
+    // console.clear();  
+};
+
   return (
     <>
     <div className='header'>
     <IconButton>
-       {user?<Avatar alt="PP" src={user.profilePicture} />:<PersonIcon  fontSize='large' className='header_icon'/>}
+    <div class="dropdown">
+          <span>{user?<Avatar alt="PP" src={user.profilePicture} />:<PersonIcon  fontSize='large' className='header_icon'/>}</span>
+          <div class="dropdown-content">
+            <button onClick={onSignoutSuccess}>Log Out</button>
+         </div>
+     </div>
     </IconButton>
     <img
        className='header_logo'
@@ -67,9 +67,7 @@ function Header({email}) {
        alt='tinder logo'
     />
     <IconButton>
-      <Button onClick={handleOpen}>
-        <AddAPhotoIcon  fontSize='large' className='header_icon' />
-      </Button>
+        <AddAPhotoIcon  fontSize='large' className='header_icon'onClick={handleOpen} />
     </IconButton>
     </div>
     <Modal
@@ -106,6 +104,7 @@ function Header({email}) {
         </div>
         </Box>
       </Modal>
+     
     </>
   )
 }
